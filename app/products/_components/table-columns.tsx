@@ -4,12 +4,7 @@ import { Badge } from "@/app/_components/ui/badge";
 import { Product } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
-const getStatusLabel = (status: string) => {
-  if (status === "IN_STOCK") {
-    return "Em estoque";
-  }
-  return "Fora de estoque";
-};
+// Status será derivado de `stock` (stock > 0 => "Em estoque")
 
 export const productTableColumns: ColumnDef<Product>[] = [
   {
@@ -25,16 +20,13 @@ export const productTableColumns: ColumnDef<Product>[] = [
     header: "Estoque",
   },
   {
-    accessorKey: "status",
+    id: "status",
     header: "Status",
     cell: (row) => {
       const product = row.row.original;
-      const label = getStatusLabel(product.status);
-      return (
-        <Badge variant={label === "Em estoque" ? "default" : "outline"}>
-          {label}
-        </Badge>
-      );
+      const inStock = product.stock > 0;
+      const label = inStock ? "Em estoque" : "Fora de estoque";
+      return <Badge variant={inStock ? "default" : "outline"}>{label}</Badge>;
     },
   },
 ];
