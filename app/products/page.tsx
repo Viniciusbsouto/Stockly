@@ -1,7 +1,7 @@
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
 import { getProducts } from "../_data-access/product/get-products";
-import AddProductButton from "./_components/add-product-button";
+import CreateProductButton from "./_components/create-product-button";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ const ProductsPage = async () => {
           </span>
           <h2 className="text-xl font-semibold">Produtos</h2>
         </div>
-        <AddProductButton />
+        <CreateProductButton />
       </div>
       <DataTable
         columns={productTableColumns}
