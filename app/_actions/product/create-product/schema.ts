@@ -8,7 +8,7 @@ export const createProductSchema = z.object({
   price: z.number().min(0.01, { message: "O preço do produto é obrigatório" }),
   stock: z.coerce
     .number()
-    .positive({ message: "A quantidade do estoque deve ser Positiva" })
+    .positive({ message: "A quantidade do estoque deve ser maior que zero" })
     .int(),
 });
 
