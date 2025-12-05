@@ -29,10 +29,11 @@ import {
 import { formatCurrency } from "@/app/_helpers/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Product } from "@prisma/client";
-import { PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import SalesTableDropdownMenu from "./table-dropdown-menu";
+import { PlusIcon } from "lucide-react";
 
 const formSchema = z.object({
   productId: z.string().uuid({ message: "O produto é obrigatório" }),
@@ -109,8 +110,14 @@ const UpsertSheetContent = ({
     }, 0);
   }, [selectedProduct]);
 
+  const onDelete = (productId: string) => {
+    setSelectedProduct((currentProducts) =>
+      currentProducts.filter((product) => product.id !== productId),
+    );
+  };
+
   return (
-    <SheetContent className="!max-w-[500px]">
+    <SheetContent className="!max-w-[700px]">
       <SheetHeader>
         <SheetTitle>Nova venda</SheetTitle>
         <SheetDescription>
@@ -168,6 +175,7 @@ const UpsertSheetContent = ({
             <TableHead>Preço unitário</TableHead>
             <TableHead>Quantidade</TableHead>
             <TableHead>Total</TableHead>
+            <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -179,11 +187,18 @@ const UpsertSheetContent = ({
               <TableCell>
                 {formatCurrency(product.price * product.quantity)}
               </TableCell>
+              <TableCell>
+                <SalesTableDropdownMenu
+                  product={{ id: product.id }}
+                  onDelete={onDelete}
+                />
+              </TableCell>
             </TableRow>
           ))}
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
             <TableCell>{formatCurrency(productsTotal)}</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableBody>
       </Table>
