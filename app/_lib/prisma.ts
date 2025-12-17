@@ -1,21 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { PrismaClient } from "@prisma/client";
 const createPrismaClient = () => {
-  return new PrismaClient().$extends({
-    result: {
-      product: {
-        status: {
-          needs: { stock: true },
-          compute(product: { stock: number }) {
-            if (product.stock <= 0) {
-              return "OUT_OF_STOCK";
-            }
-            return "IN_STOCK";
-          },
-        },
-      },
-    },
-  });
+  return new PrismaClient()
 };
 
 type PrismaClientType = ReturnType<typeof createPrismaClient>;
