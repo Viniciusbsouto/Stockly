@@ -27,7 +27,9 @@ interface ProductTableDropdownMenuProps {
   product: Product;
 }
 
-const ProductTableDropdownMenu = ({product} : ProductTableDropdownMenuProps) => {
+const ProductTableDropdownMenu = ({
+  product,
+}: ProductTableDropdownMenuProps) => {
   const [editDialogIsOpen, setEditDialogIsOpen] = useState(false);
 
   return (
@@ -72,7 +74,7 @@ const ProductTableDropdownMenu = ({product} : ProductTableDropdownMenuProps) => 
           price: Number(product.price),
           stock: product.stock,
         }}
-        onSuccess={() => setEditDialogIsOpen(false)}
+        setDialogIsOpen={setEditDialogIsOpen}
       />
     </Dialog>
   );
