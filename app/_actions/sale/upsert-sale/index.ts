@@ -13,12 +13,13 @@ export const upsertSale = actionClient
     const isUpdate = Boolean(id);
 
     await db.$transaction(async (trx) => {
-      const existingSale = await trx.sale.findUnique({
-        where: { id },
-        include: { products: true },
-      });
-      if (!existingSale) return;
+      let existingSale = null;
       if (isUpdate) {
+        existingSale = await trx.sale.findUnique({
+          where: { id },
+          include: { products: true },
+        });
+        if (!existingSale) return;
         await trx.sale.delete({
           where: { id },
         });
