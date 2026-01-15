@@ -1,16 +1,36 @@
 "use server";
 
 import { db } from "@/app/_lib/prisma";
-import { createSaleSchema } from "./schema";
+import { upsertSaleSchema } from "./schema";
 import { revalidatePath } from "next/cache";
 import { actionClient } from "@/app/_lib/safe-action";
 
 import { returnValidationErrors } from "next-safe-action";
 
-export const createSale = actionClient
-  .schema(createSaleSchema)
-  .action(async ({ parsedInput: { products } }) => {
+export const upsertSale = actionClient
+  .schema(upsertSaleSchema)
+  .action(async ({ parsedInput: { products, id } }) => {
+    const isUpdate = Boolean(id);
+
     await db.$transaction(async (trx) => {
+      const existingSale = await trx.sale.findUnique({
+        where: { id },
+        include: { products: true },
+      });
+      if (!existingSale) return;
+      if (isUpdate) {
+        await trx.sale.delete({
+          where: { id },
+        });
+        for (const product of existingSale.products) {
+          await trx.product.update({
+            where: { id: product.productId },
+            data: {
+              stock: { increment: product.quantity },
+            },
+          });
+        }
+      }
       const sale = await trx.sale.create({
         data: {
           date: new Date(),
@@ -18,19 +38,19 @@ export const createSale = actionClient
       });
 
       for (const product of products) {
-        const productFromDb = await db.product.findUnique({
+        const productFromDb = await trx.product.findUnique({
           where: {
             id: product.id,
           },
         });
         if (!productFromDb) {
-          returnValidationErrors(createSaleSchema, {
+          returnValidationErrors(upsertSaleSchema, {
             _errors: ["Product not found."],
           });
         }
         const productIsOutOfStock = product.quantity > productFromDb.stock;
         if (productIsOutOfStock) {
-          returnValidationErrors(createSaleSchema, {
+          returnValidationErrors(upsertSaleSchema, {
             _errors: ["Product is out of stock."],
           });
         }

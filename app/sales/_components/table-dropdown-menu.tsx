@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import { Sale } from "@prisma/client";
+import { Sheet, SheetTrigger } from "@/app/_components/ui/sheet";
 
 import {
   MoreHorizontalIcon,
@@ -29,12 +29,24 @@ import {
 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
+import UpsertSheetContent from "./upsert-sheet-content";
+import { useState } from "react";
+import { ComboboxOption } from "@/app/_components/ui/combobox";
+import { ProductDto } from "@/app/_data-access/product/get-products";
+import { SaleDto } from "@/app/_data-access/sale/get-sales";
 
 interface SalesTableDropdownMenuProps {
-  sale: Pick<Sale, "id">;
+  sale: Pick<SaleDto, "id" | "saleProducts">;
+  productOptions: ComboboxOption[];
+  products: ProductDto[];
 }
 
-const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
+const SalesTableDropdownMenu = ({
+  sale,
+  products,
+  productOptions,
+}: SalesTableDropdownMenuProps) => {
+  const [upsertSheetIsOpen, setUpsertSheetIsOpen] = useState(false);
   const { execute } = useAction(deleteSale, {
     onSuccess: () => {
       toast.success("Venda deletada com sucesso");
@@ -49,53 +61,69 @@ const SalesTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
   };
   const handleConfirmDeleteClick = () => execute({ id: sale.id });
   return (
-    <AlertDialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost">
-            <MoreHorizontalIcon size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="gap-1.5"
-            onClick={handleCopyToClipboardClick}
-          >
-            <ClipboardCopyIcon size={16} />
-            Copiar ID
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <EditIcon size={16} className="gap-1.5" />
-            Editar
-          </DropdownMenuItem>
-          <AlertDialogTrigger asChild>
-            <DropdownMenuItem className="gap-1.5">
-              <Trash2Icon size={16} />
-              Deletar
+    <Sheet open={upsertSheetIsOpen} onOpenChange={setUpsertSheetIsOpen}>
+      <AlertDialog>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost">
+              <MoreHorizontalIcon size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="gap-1.5"
+              onClick={handleCopyToClipboardClick}
+            >
+              <ClipboardCopyIcon size={16} />
+              Copiar ID
             </DropdownMenuItem>
-          </AlertDialogTrigger>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            Você realmente deseja deletar esta venda?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Esta ação não pode ser desfeita. Isso irá deletar permanentemente o
-            produto e remover seus dados. Deseja continuar?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirmDeleteClick}>
-            Continuar
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            <SheetTrigger asChild>
+              <DropdownMenuItem>
+                <EditIcon size={16} className="gap-1.5" />
+                Editar
+              </DropdownMenuItem>
+            </SheetTrigger>
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem className="gap-1.5">
+                <Trash2Icon size={16} />
+                Deletar
+              </DropdownMenuItem>
+            </AlertDialogTrigger>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Você realmente deseja deletar esta venda?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso irá deletar permanentemente
+              o produto e remover seus dados. Deseja continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDeleteClick}>
+              Continuar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <UpsertSheetContent
+      saleId={sale.id}
+        productOptions={productOptions}
+        products={products}
+        setSheetIsOpen={setUpsertSheetIsOpen}
+        defaultSelectedProducts={sale.saleProducts.map((saleProduct) => ({
+          id: saleProduct.productId,
+          quantity: saleProduct.quantity,
+          name: saleProduct.productName,
+          price: saleProduct.unitPrice,
+        }))}
+      />
+    </Sheet>
   );
 };
 
