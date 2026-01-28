@@ -68,9 +68,9 @@ export const getDashboard = async (): Promise<DashboardDto> => {
 
   const startOfDay = new Date(new Date().setHours(0, 0, 0, 0));
   const endOfDay = new Date(new Date().setHours(23, 59, 59, 999));
-
   const totalRevenuePromise =
     db.$queryRawUnsafe<{ totalRevenue: number }[]>(totalRevenueQuery);
+
   const todayRevenuePromise = db.$queryRawUnsafe<{ todayRevenue: number }[]>(
     todayRevenueQuery,
     startOfDay,
