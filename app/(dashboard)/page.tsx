@@ -1,7 +1,4 @@
-import {
-  PackageIcon,
-  ShoppingBasketIcon,
-} from "lucide-react";
+import { ShoppingBasketIcon } from "lucide-react";
 import Header, {
   HeaderLeft,
   HeaderSubtitle,
@@ -21,14 +18,11 @@ import TotalRevenueCard from "./_components/total-revenue-card";
 import { Suspense } from "react";
 import TodayRevenueCard from "./_components/today-revenue-card";
 import TotalSalesCard from "./_components/total-sales-card";
+import TotalStockCard from "./_components/total-stock-card";
 
 const Home = async () => {
-  const {
-    totalStock,
-    totalProducts,
-    totalLast14DaysRevenue,
-    mostSoldProducts,
-  } = await getDashboard();
+  const { totalProducts, totalLast14DaysRevenue, mostSoldProducts } =
+    await getDashboard();
 
   return (
     <div className="m-8 flex w-full flex-col space-y-8 rounded-lg">
@@ -54,13 +48,9 @@ const Home = async () => {
           <TotalSalesCard />
         </Suspense>
         {/* Total em Estoque */}
-        <SummaryCard>
-          <SummaryCardIcon>
-            <PackageIcon />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Total em estoque</SummaryCardTitle>
-          <SummaryCardValue>{totalStock}</SummaryCardValue>
-        </SummaryCard>
+        <Suspense fallback={<SummaryCardSkeleton />}>
+          <TotalStockCard />
+        </Suspense>
         {/*Produtos */}
         <SummaryCard>
           <SummaryCardIcon>
