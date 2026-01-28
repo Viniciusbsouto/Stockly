@@ -19,7 +19,6 @@ export interface MostSoldProductDto {
 interface DashboardDto {
   totalRevenue: number;
   todayRevenue: number;
-  totalSales: number;
   totalStock: number;
   totalProducts: number;
   totalLast14DaysRevenue: DayTotalRevenue[];
@@ -77,7 +76,6 @@ export const getDashboard = async (): Promise<DashboardDto> => {
     endOfDay,
   );
 
-  const totalSalesPromise = db.sale.count();
   const totalStockPromise = db.product.aggregate({
     _sum: {
       stock: true,
@@ -104,14 +102,12 @@ export const getDashboard = async (): Promise<DashboardDto> => {
   const [
     totalRevenue,
     todayRevenue,
-    totalSales,
     totalStock,
     totalProducts,
     mostSoldProducts,
   ] = await Promise.all([
     totalRevenuePromise,
     todayRevenuePromise,
-    totalSalesPromise,
     totalStockPromise,
     totalProductsPromise,
     mostSoldProductsPromise,
@@ -119,7 +115,6 @@ export const getDashboard = async (): Promise<DashboardDto> => {
   return {
     totalRevenue: totalRevenue[0].totalRevenue,
     todayRevenue: todayRevenue[0].todayRevenue,
-    totalSales,
     totalStock: Number(totalStock._sum.stock),
     totalProducts,
     totalLast14DaysRevenue,
