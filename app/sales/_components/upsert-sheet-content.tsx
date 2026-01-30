@@ -29,7 +29,7 @@ import {
 } from "@/app/_components/ui/table";
 import { formatCurrency } from "@/app/_helpers/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import UpsertSaleTableDropdownMenu from "./upsert-table-dropdown-menu";
@@ -59,6 +59,7 @@ interface SelectedProduct {
 }
 
 interface UpsertSheetContentProps {
+  isOpen: boolean;
   saleId?: string;
   products: ProductDto[];
   productOptions: ComboboxOption[];
@@ -67,6 +68,7 @@ interface UpsertSheetContentProps {
 }
 
 const UpsertSheetContent = ({
+  isOpen,
   saleId,
   products,
   productOptions,
@@ -95,6 +97,17 @@ const UpsertSheetContent = ({
       quantity: 1,
     },
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedProduct([]);
+      form.reset();
+    }
+  }, [isOpen, form]);
+
+  useEffect(() => {
+    setSelectedProduct(defaultSelectedProducts ?? []);
+  }, [defaultSelectedProducts]);
 
   const onSubmit = (data: FormSchema) => {
     const selectedProduct = products.find(
