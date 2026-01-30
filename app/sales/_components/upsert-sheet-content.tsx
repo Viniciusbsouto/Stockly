@@ -31,6 +31,7 @@ import { formatCurrency } from "@/app/_helpers/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import z from "zod";
 import UpsertSaleTableDropdownMenu from "./upsert-table-dropdown-menu";
 import { CheckIcon, PlusIcon } from "lucide-react";
@@ -91,7 +92,7 @@ const UpsertSheetContent = ({
   });
 
   const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormSchema>,
     defaultValues: {
       productId: "",
       quantity: 1,
@@ -200,9 +201,10 @@ const UpsertSheetContent = ({
                 <FormLabel>Produto</FormLabel>
                 <FormControl>
                   <Combobox
-                    {...field}
                     options={productOptions}
                     placeholder="Selecione um produto"
+                    value={field.value ?? ""}
+                    onChange={(value) => field.onChange(value)}
                   />
                 </FormControl>
                 <FormMessage />
