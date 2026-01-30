@@ -29,6 +29,7 @@ import { Loader2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
 
@@ -52,7 +53,9 @@ const UpsertProductDialogContent = ({
   });
   const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
-    resolver: zodResolver(upsertProductSchema),
+    resolver: zodResolver(
+      upsertProductSchema,
+    ) as unknown as Resolver<UpsertProductSchema>,
     defaultValues: defaultValues || {
       name: "",
       price: 0,
