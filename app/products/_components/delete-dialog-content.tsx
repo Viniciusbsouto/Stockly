@@ -10,6 +10,7 @@ import {
 } from "@/app/_components/ui/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface DeleteProductDialogContentProps {
   productId: string;
@@ -18,9 +19,11 @@ interface DeleteProductDialogContentProps {
 const DeleteProductDialogContent = ({
   productId,
 }: DeleteProductDialogContentProps) => {
+  const router = useRouter();
   const { execute: executeDeleteProduct } = useAction(deleteProduct, {
     onSuccess: () => {
       toast.success("Produto deletado com sucesso!");
+      router.refresh();
     },
     onError: () => {
       toast.error("Erro ao deletar o produto. Tente novamente.");
