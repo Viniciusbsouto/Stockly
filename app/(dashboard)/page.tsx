@@ -17,6 +17,8 @@ import MostSoldProducts, {
   MostSoldProductsSkeleton,
 } from "./_components/most-sold-products";
 
+export const dynamic = "force-dynamic";
+
 const Home = async () => {
   return (
     <div className="m-8 flex w-full flex-col space-y-8 rounded-lg">

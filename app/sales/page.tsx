@@ -11,6 +11,8 @@ import { getSales } from "../_data-access/sale/get-sales";
 import UpsertSaleButton from "./_components/create-sale-button";
 import { saleTableColumns } from "./_components/table-colums";
 
+export const dynamic = "force-dynamic";
+
 const SalesPage = async () => {
   const sales = await getSales();
   const products = await getProducts();
